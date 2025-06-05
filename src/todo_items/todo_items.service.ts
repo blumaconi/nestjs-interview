@@ -43,4 +43,16 @@ export class TodoItemsService {
 
     return item;
   }
+
+  delete(listId: number, itemId: number): void {
+    const index = this.todoItems.findIndex(
+      (item) => item.id === itemId && item.listId === listId,
+    );
+
+    if (index === -1) {
+      throw new Error('Item no encontrado');
+    }
+
+    this.todoItems.splice(index, 1);
+  }
 }
