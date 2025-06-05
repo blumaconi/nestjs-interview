@@ -7,6 +7,10 @@ import { getNextId } from '../utils/utils';
 export class TodoItemsService {
   private readonly todoItems: TodoItem[] = [];
 
+  findAll(listId: number): TodoItem[] {
+    return this.todoItems.filter((item) => item.listId === listId);
+  }
+
   create(listId: number, dto: CreateTodoItemDto): TodoItem {
     const item: TodoItem = {
       id: getNextId(this.todoItems),
