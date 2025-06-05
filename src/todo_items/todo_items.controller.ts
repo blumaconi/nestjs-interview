@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { TodoItemsService } from './todo_items.service';
 import { CreateTodoItemDto } from './dtos/create-todo_item';
+import { UpdateTodoItemDto } from './dtos/update-todo_item';
 
 @Controller('todolists/:listId/items')
 export class TodoItemsController {
@@ -14,5 +15,14 @@ export class TodoItemsController {
   @Post()
   create(@Param('listId') listId: string, @Body() dto: CreateTodoItemDto) {
     return this.todoItemsService.create(Number(listId), dto);
+  }
+
+  @Put(':itemId')
+  update(
+    @Param('listId') listId: string,
+    @Param('itemId') itemId: string,
+    @Body() dto: UpdateTodoItemDto,
+  ) {
+    return this.todoItemsService.update(Number(listId), Number(itemId), dto);
   }
 }
