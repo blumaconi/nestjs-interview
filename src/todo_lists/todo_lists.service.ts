@@ -47,4 +47,10 @@ export class TodoListsService {
       this.todolists.splice(index, 1);
     }
   }
+
+  findByName(name: string) {
+    return this.todolists.find(
+      (list) => list.name.toLowerCase() === name.toLowerCase(),
+    );
+  }
 }

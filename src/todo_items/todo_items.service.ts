@@ -30,7 +30,7 @@ export class TodoItemsService {
     );
 
     if (!item) {
-      throw new Error('Item no encontrado');
+      throw new Error('Item not found');
     }
 
     if (dto.description !== undefined) {
@@ -50,7 +50,7 @@ export class TodoItemsService {
     );
 
     if (index === -1) {
-      throw new Error('Item no encontrado');
+      throw new Error('Item not found');
     }
 
     this.todoItems.splice(index, 1);
