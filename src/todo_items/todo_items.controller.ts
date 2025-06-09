@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
 } from '@nestjs/common';
@@ -32,6 +33,11 @@ export class TodoItemsController {
     @Body() dto: UpdateTodoItemDto,
   ) {
     return this.todoItemsService.update(Number(listId), Number(itemId), dto);
+  }
+
+  @Patch(':id/complete')
+  complete(@Param('id') id: number) {
+    return this.todoItemsService.setCompleted(id);
   }
 
   @Delete(':itemId')

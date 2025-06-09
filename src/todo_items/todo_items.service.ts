@@ -33,14 +33,27 @@ export class TodoItemsService {
       throw new Error('Item not found');
     }
 
+    if (dto.completed !== undefined) {
+      throw new Error(
+        'You cannot update completion status from this endpoint.',
+      );
+    }
+
     if (dto.description !== undefined) {
       item.description = dto.description;
     }
 
-    if (dto.completed !== undefined) {
-      item.completed = dto.completed;
+    return item;
+  }
+
+  setCompleted(id: number) {
+    const item = this.findById(id);
+
+    if (!item) {
+      throw new Error('Item not found');
     }
 
+    item.completed = true;
     return item;
   }
 
@@ -54,5 +67,9 @@ export class TodoItemsService {
     }
 
     this.todoItems.splice(index, 1);
+  }
+
+  findById(id: number) {
+    return this.todoItems.find((item) => item.id === id);
   }
 }
