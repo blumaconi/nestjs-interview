@@ -34,9 +34,7 @@ export class TodoItemsService {
     }
 
     if (dto.completed !== undefined) {
-      throw new Error(
-        'You cannot update completion status from this endpoint.',
-      );
+      throw new Error('You cannot update completion status from this endpoint');
     }
 
     if (dto.description !== undefined) {
