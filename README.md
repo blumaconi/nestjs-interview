@@ -54,7 +54,7 @@ Ejemplo de prompt para usar con un cliente MCP como Claude:
 - `POST   /todolists/:listId/items` → Crear ítem
 - `GET    /todolists/:listId/items` → Listar ítems de una lista
 - `PUT    /todolists/:listId/items/:id` → Actualizar ítem
-- `PATCH  /todolists/:listId/items/:id/completed` → Marcar ítem como completado
+- `PATCH  /todolists/:listId/items/:id/complete` → Marcar ítem como completado
 - `DELETE /todolists/:listId/items/:id` → Eliminar ítem
 
 ### `TodoLists`
@@ -70,9 +70,9 @@ Ejemplo de prompt para usar con un cliente MCP como Claude:
 - Validación y transformación de datos con `class-validator` y `class-transformer`.
 - Simulación de almacenamiento en memoria.
 - Servidor MCP con herramientas invocables por lenguaje natural.
-- Validación de duplicados por nombre de tarea dentro de cada lista.
+- Validación de descripción duplicada al crear tareas en una misma lista.
 - Lógica separada por capas de servicios.
-- Testing manual y tests unitarios en progreso.
+- Cobertura completa de tests unitarios para servicios y controladores.
 
 ---
 
@@ -84,7 +84,7 @@ Para correr pruebas unitarias del proyecto:
 npm run test
 ```
 
-Los archivos de pruebas se encuentran dentro de la carpeta `src/**/test/`.
+Los tests se encuentran en los archivos `.spec.ts` dentro de `src/todo_items/`.
 
 ---
 
