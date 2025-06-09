@@ -154,3 +154,39 @@ server.tool(
     };
   },
 );
+
+server.tool(
+  'deleteTodoItem',
+  'Delete an existing task from a given list by its name and the task description.',
+  {
+    listName: z.string(),
+    description: z.string(),
+  },
+  async ({ listName, description }) => {
+    const list = await todoListsService.findByName(listName);
+    if (!list) {
+      throw new Error(`The list "${listName}" does not exist`);
+    }
+
+    const item = todoItemsService
+      .findAll(list.id)
+      .find((item) => item.description === description);
+
+    if (!item) {
+      throw new Error(
+        `No task found with description "${description}" in the list "${listName}"`,
+      );
+    }
+
+    await todoItemsService.delete(list.id, item.id);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `Task "${description}" deleted from the list ${listName}`,
+        },
+      ],
+    };
+  },
+);
