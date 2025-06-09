@@ -83,6 +83,27 @@ describe('TodoItemController', () => {
     });
   });
 
+  describe('complete', () => {
+    it('should mark the task as completed', () => {
+      todoItemsService.create(1, { description: 'Sample task' });
+
+      const result = todoItemsController.complete(1);
+
+      expect(result).toEqual({
+        id: 1,
+        listId: 1,
+        description: 'Sample task',
+        completed: true,
+      });
+    });
+
+    it('should throw an error if the item does not exist', () => {
+      expect(() => todoItemsController.complete(999)).toThrowError(
+        'Item not found',
+      );
+    });
+  });
+
   describe('delete', () => {
     it('should delete the todo item with the given id and listId', () => {
       (todoItemsService as any).todoItems = [
