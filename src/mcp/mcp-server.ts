@@ -41,7 +41,67 @@ server.tool(
       content: [
         {
           type: 'text',
-          text: `Task "${description}" created in the list ${listName}.`,
+          text: `Task "${description}" created in the list ${listName}`,
+        },
+      ],
+    };
+  },
+);
+
+server.tool(
+  'updateTodoItem',
+  'Update the description of an existing task in a given list by its name.',
+  {
+    listName: z.string(),
+    currentDescription: z.string(),
+    newDescription: z.string(),
+  },
+  async ({ listName, currentDescription, newDescription }) => {
+    const list = await todoListsService.findByName(listName);
+    if (!list) {
+      throw new Error(`The list "${listName}" does not exist`);
+    }
+
+    const allItems = todoItemsService.findAll(list.id);
+
+    const item = allItems.find(
+      (item) => item.description === currentDescription,
+    );
+    if (!item) {
+      throw new Error(
+        `No task found with description "${currentDescription}" in the list "${listName}"`,
+      );
+    }
+
+    if (currentDescription === newDescription) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `No changes applied: the new description is the same as the current one`,
+          },
+        ],
+      };
+    }
+
+    const dumplicate = allItems.find(
+      (item) => item.description === newDescription,
+    );
+    if (dumplicate) {
+      throw new Error(
+        `A task with the description "${newDescription}" already exists in the list "${listName}"`,
+      );
+    }
+
+    await todoItemsService.update(list.id, item.id, {
+      description: newDescription,
+    });
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `Task "${currentDescription}" updated to "${newDescription}" in the list ${listName}`,
         },
       ],
     };
