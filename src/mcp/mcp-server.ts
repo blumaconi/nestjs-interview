@@ -107,3 +107,50 @@ server.tool(
     };
   },
 );
+
+server.tool(
+  'completeTodoItem',
+  'Mark an existing task as completed by its description and the name of the list it belongs to.',
+  {
+    listName: z.string(),
+    description: z.string(),
+  },
+  async ({ listName, description }) => {
+    const list = await todoListsService.findByName(listName);
+    if (!list) {
+      throw new Error(`The list "${listName}" does not exist`);
+    }
+
+    const item = todoItemsService
+      .findAll(list.id)
+      .find((item) => item.description === description);
+
+    if (!item) {
+      throw new Error(
+        `No task found with description "${description}" in the list "${listName}"`,
+      );
+    }
+
+    if (item.completed) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `The task "${description}" is already marked as completed`,
+          },
+        ],
+      };
+    }
+
+    await todoItemsService.setCompleted(item.id);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `Task "${description}" marked as completed in the list ${listName}`,
+        },
+      ],
+    };
+  },
+);
