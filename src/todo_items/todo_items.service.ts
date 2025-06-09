@@ -13,6 +13,16 @@ export class TodoItemsService {
   }
 
   create(listId: number, dto: CreateTodoItemDto): TodoItem {
+    const duplicate = this.todoItems
+      .filter((item) => item.listId === listId)
+      .find((item) => item.description === dto.description);
+
+    if (duplicate) {
+      throw new Error(
+        `A task with the description "${dto.description}" already exists in list`,
+      );
+    }
+
     const item: TodoItem = {
       id: getNextId(this.todoItems),
       listId,
