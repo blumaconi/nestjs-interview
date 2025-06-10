@@ -86,6 +86,12 @@ npm run test
 
 Los tests se encuentran en los archivos `.spec.ts` dentro de `src/todo_items/`.
 
+### Notas adicionales sobre testing MCP
+
+Se intentó implementar pruebas unitarias específicas para las herramientas MCP usando `invokeTool`, pero surgieron errores en el entorno de desarrollo.
+
+→ Ver detalles en [`test-notes.md`](./test-notes.md).
+
 ---
 
 ## Tecnologías utilizadas
@@ -94,7 +100,7 @@ Los tests se encuentran en los archivos `.spec.ts` dentro de `src/todo_items/`.
 - TypeScript
 - Node.js
 - [Model Context Protocol (MCP)](https://github.com/modelcontextprotocol)
-- Zod (para validación en MCP tools)
+- Zod (validación en MCP tools)
 
 ---
 
