@@ -1,28 +1,28 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { before } from 'node:test';
 import { TodoListsController } from './todo_lists.controller';
 import { TodoListsService } from './todo_lists.service';
+import { memoryStore } from '../shared/memory.store';
 
 describe('TodoListsController', () => {
-  let todoListService: TodoListsService;
   let todoListsController: TodoListsController;
 
   beforeEach(async () => {
-    todoListService = new TodoListsService([
+    memoryStore.todoLists.length = 0;
+    memoryStore.todoLists.push(
       { id: 1, name: 'test1' },
       { id: 2, name: 'test2' },
-    ]);
+    );
 
-    const app: TestingModule = await Test.createTestingModule({
+    const module: TestingModule = await Test.createTestingModule({
       controllers: [TodoListsController],
-      providers: [{ provide: TodoListsService, useValue: todoListService }],
+      providers: [TodoListsService],
     }).compile();
 
-    todoListsController = app.get<TodoListsController>(TodoListsController);
+    todoListsController = module.get<TodoListsController>(TodoListsController);
   });
 
   describe('index', () => {
-    it('should return the list of todolist', () => {
+    it('should return the list of todolists', () => {
       expect(todoListsController.index()).toEqual([
         { id: 1, name: 'test1' },
         { id: 2, name: 'test2' },
@@ -45,18 +45,18 @@ describe('TodoListsController', () => {
         todoListsController.update({ todoListId: 1 }, { name: 'modified' }),
       ).toEqual({ id: 1, name: 'modified' });
 
-      expect(todoListService.get(1).name).toEqual('modified');
+      expect(memoryStore.todoLists.find((x) => x.id === 1)?.name).toEqual(
+        'modified',
+      );
     });
   });
 
   describe('create', () => {
-    it('should update the todolist with the given id', () => {
-      expect(todoListsController.create({ name: 'new' })).toEqual({
-        id: 3,
-        name: 'new',
-      });
+    it('should create a new todolist', () => {
+      const created = todoListsController.create({ name: 'new' });
 
-      expect(todoListService.all().length).toBe(3);
+      expect(created).toEqual({ id: 3, name: 'new' });
+      expect(memoryStore.todoLists.length).toBe(3);
     });
   });
 
@@ -64,7 +64,7 @@ describe('TodoListsController', () => {
     it('should delete the todolist with the given id', () => {
       expect(() => todoListsController.delete({ todoListId: 1 })).not.toThrow();
 
-      expect(todoListService.all().map((x) => x.id)).toEqual([2]);
+      expect(memoryStore.todoLists.map((x) => x.id)).toEqual([2]);
     });
   });
 });

@@ -2,28 +2,36 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TodoItemsController } from './todo_items.controller';
 import { TodoItemsService } from './todo_items.service';
 import { CreateTodoItemDto } from './dtos/create-todo_item';
+import { memoryStore } from '../shared/memory.store';
 
 describe('TodoItemController', () => {
-  let todoItemsService: TodoItemsService;
   let todoItemsController: TodoItemsController;
 
   beforeEach(async () => {
-    todoItemsService = new TodoItemsService();
+    // Clear shared state before each test
+    memoryStore.todoItems.length = 0;
 
     const moduleRef: TestingModule = await Test.createTestingModule({
       controllers: [TodoItemsController],
-      providers: [{ provide: TodoItemsService, useValue: todoItemsService }],
+      providers: [TodoItemsService],
     }).compile();
 
     todoItemsController =
       moduleRef.get<TodoItemsController>(TodoItemsController);
   });
-  // Tests for the TodoItemsController
+
   describe('findall', () => {
     it('should return all items for the given listId', () => {
-      todoItemsService.create(1, { description: 'Task 1' });
-      todoItemsService.create(1, { description: 'Task 2' });
-      todoItemsService.create(2, { description: 'Task from another list' });
+      memoryStore.todoItems.push(
+        { id: 1, listId: 1, description: 'Task 1', completed: false },
+        { id: 2, listId: 1, description: 'Task 2', completed: false },
+        {
+          id: 3,
+          listId: 2,
+          description: 'Task from another list',
+          completed: false,
+        },
+      );
 
       const result = todoItemsController.findAll('1');
 
@@ -51,13 +59,18 @@ describe('TodoItemController', () => {
       });
 
       // Verifies that the array of todoItems contains one element
-      expect(todoItemsService['todoItems'].length).toBe(1);
+      expect(memoryStore.todoItems.length).toBe(1);
     });
   });
 
   describe('update', () => {
     it('should update the description of the item', () => {
-      todoItemsService.create(1, { description: 'Existing task' });
+      memoryStore.todoItems.push({
+        id: 1,
+        listId: 1,
+        description: 'Existing task',
+        completed: false,
+      });
 
       const result = todoItemsController.update('1', '1', {
         description: 'Updated task',
@@ -72,7 +85,12 @@ describe('TodoItemController', () => {
     });
 
     it('should throw an error if trying to update completed status', () => {
-      todoItemsService.create(1, { description: 'Another task' });
+      memoryStore.todoItems.push({
+        id: 1,
+        listId: 1,
+        description: 'Another task',
+        completed: false,
+      });
 
       expect(() =>
         todoItemsController.update('1', '1', {
@@ -85,7 +103,12 @@ describe('TodoItemController', () => {
 
   describe('complete', () => {
     it('should mark the task as completed', () => {
-      todoItemsService.create(1, { description: 'Sample task' });
+      memoryStore.todoItems.push({
+        id: 1,
+        listId: 1,
+        description: 'Sample task',
+        completed: false,
+      });
 
       const result = todoItemsController.complete(1);
 
@@ -106,24 +129,23 @@ describe('TodoItemController', () => {
 
   describe('delete', () => {
     it('should delete the todo item with the given id and listId', () => {
-      (todoItemsService as any).todoItems = [
-        {
-          id: 1,
-          listId: 1,
-          description: 'Sample task',
-          completed: false,
-        },
-      ];
+      memoryStore.todoItems.push({
+        id: 1,
+        listId: 1,
+        description: 'Sample task',
+        completed: false,
+      });
 
-      // execute the delete method
-      todoItemsService.delete(1, 1);
+      todoItemsController.delete('1', '1');
 
-      // verify the array is now empty
-      expect((todoItemsService as any).todoItems).toHaveLength(0);
+      // Verify the array is now empty
+      expect(memoryStore.todoItems).toHaveLength(0);
     });
 
     it('should throw an error if the item is not found', () => {
-      expect(() => todoItemsService.delete(1, 999)).toThrow('Item not found');
+      expect(() => todoItemsController.delete('1', '999')).toThrow(
+        'Item not found',
+      );
     });
   });
 });

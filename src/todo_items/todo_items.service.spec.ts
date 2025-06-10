@@ -1,10 +1,13 @@
 import { TodoItemsService } from './todo_items.service';
 import { TodoItem } from '../interfaces/todo_item.interface';
+import { memoryStore } from '../shared/memory.store';
 
 describe('TodoItemsService', () => {
   let service: TodoItemsService;
 
   beforeEach(() => {
+    // Clear shared memory before each test
+    memoryStore.todoItems.length = 0;
     service = new TodoItemsService();
   });
 
@@ -17,7 +20,6 @@ describe('TodoItemsService', () => {
     it('should return all items for the given listId', () => {
       service.create(1, { description: 'Task 1' });
       service.create(1, { description: 'Task 2' });
-
       service.create(2, { description: 'Task from another list' });
 
       const result = service.findAll(1);
@@ -122,7 +124,7 @@ describe('TodoItemsService', () => {
     it('should delete the todo item with the given id and listId', () => {
       service.delete(1, 1);
 
-      expect(service['todoItems']).toHaveLength(0);
+      expect(memoryStore.todoItems).toHaveLength(0);
     });
 
     it('should throw an error if the item does not exist', () => {
@@ -138,7 +140,7 @@ describe('TodoItemsService', () => {
       service.create(1, { description: 'Task 2' });
     });
 
-    it('should return the item with the given ID', () => {
+    it('should return the item with the given Id', () => {
       const item = service.findById(2);
       expect(item).toBeDefined();
       expect(item?.description).toBe('Task 2');
