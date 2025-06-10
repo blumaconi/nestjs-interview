@@ -122,9 +122,9 @@ src/
 │   └── ...
 ├── mcp/
 │   ├── mcp-server.ts
-│   ├── shared/
-│   │   └── memory.store.ts
 │   └── index.ts
+├── shared/
+│   │   └── memory.store.ts
 ├── test/
 │   ├── todo_items.e2e-spec.ts
 │   └── todo_lists.e2e-spec.ts
