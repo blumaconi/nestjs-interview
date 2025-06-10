@@ -3,17 +3,16 @@ import { TodoItem } from '../interfaces/todo_item.interface';
 import { CreateTodoItemDto } from './dtos/create-todo_item';
 import { getNextId } from '../utils/utils';
 import { UpdateTodoItemDto } from './dtos/update-todo_item';
+import { memoryStore } from '../shared/memory.store';
 
 @Injectable()
 export class TodoItemsService {
-  private readonly todoItems: TodoItem[] = [];
-
   findAll(listId: number): TodoItem[] {
-    return this.todoItems.filter((item) => item.listId === listId);
+    return memoryStore.todoItems.filter((item) => item.listId === listId);
   }
 
   create(listId: number, dto: CreateTodoItemDto): TodoItem {
-    const duplicate = this.todoItems
+    const duplicate = memoryStore.todoItems
       .filter((item) => item.listId === listId)
       .find((item) => item.description === dto.description);
 
@@ -24,18 +23,18 @@ export class TodoItemsService {
     }
 
     const item: TodoItem = {
-      id: getNextId(this.todoItems),
+      id: getNextId(memoryStore.todoItems),
       listId,
       description: dto.description,
       completed: dto.completed ?? false,
     };
 
-    this.todoItems.push(item);
+    memoryStore.todoItems.push(item);
     return item;
   }
 
   update(listId: number, itemId: number, dto: UpdateTodoItemDto): TodoItem {
-    const item = this.todoItems.find(
+    const item = memoryStore.todoItems.find(
       (i) => i.listId === listId && i.id === itemId,
     );
 
@@ -66,7 +65,7 @@ export class TodoItemsService {
   }
 
   delete(listId: number, itemId: number): void {
-    const index = this.todoItems.findIndex(
+    const index = memoryStore.todoItems.findIndex(
       (item) => item.id === itemId && item.listId === listId,
     );
 
@@ -74,10 +73,10 @@ export class TodoItemsService {
       throw new Error('Item not found');
     }
 
-    this.todoItems.splice(index, 1);
+    memoryStore.todoItems.splice(index, 1);
   }
 
   findById(id: number) {
-    return this.todoItems.find((item) => item.id === id);
+    return memoryStore.todoItems.find((item) => item.id === Number(id));
   }
 }
