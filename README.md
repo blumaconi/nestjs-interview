@@ -57,11 +57,6 @@ Ejemplo de prompt para usar con un cliente MCP como Claude:
 - `PATCH  /todolists/:listId/items/:id/complete` → Marcar ítem como completado
 - `DELETE /todolists/:listId/items/:id` → Eliminar ítem
 
-### `TodoLists`
-- `GET  /todolists` → Listar todas las listas
-- `GET  /todolists/:id` → Obtener lista por ID
-- `POST /todolists` → Crear nueva lista
-
 ---
 
 ## Funcionalidades incluidas
