@@ -63,11 +63,11 @@ Ejemplo de prompt para usar con un cliente MCP como Claude:
 
 - API RESTful organizada por módulos NestJS.
 - Validación y transformación de datos con `class-validator` y `class-transformer`.
-- Simulación de almacenamiento en memoria.
 - Servidor MCP con herramientas invocables por lenguaje natural.
-- Validación de descripción duplicada al crear tareas en una misma lista.
+- Restricción de ítems duplicados: una lista no puede contener más de una tarea con la misma descripción.
 - Lógica separada por capas de servicios.
-- Cobertura completa de tests unitarios para servicios y controladores.
+- Uso compartido de estado en memoria (`memory.store.ts`) para garantizar consistencia entre servicios.
+- Cobertura completa de tests unitarios y e2e para servicios y controladores.
 
 ---
 
@@ -79,7 +79,17 @@ Para correr pruebas unitarias del proyecto:
 npm run test
 ```
 
-Los tests se encuentran en los archivos `.spec.ts` dentro de `src/todo_items/`.
+Para correr pruebas end-to-end (e2e) con Supertest:
+
+```bash
+npm run test:e2e
+```
+
+### Organización
+
+- Los tests unitarios están ubicados junto a cada archivo de servicio o controlador, usando el sufijo `.spec.ts`.
+- Las pruebas e2e están dentro del directorio `test/` y simulan escenarios reales mediante peticiones HTTP.
+- Se incorporó un archivo [`memory.store.ts`](./src/mcp/shared/memory.store.ts) para compartir el estado en memoria entre servicios durante las pruebas e2e. Esto asegura consistencia entre módulos (por ejemplo, `TodoItemsService` y `TodoListsService`) sin necesidad de una base de datos real.
 
 ### Notas adicionales sobre testing MCP
 
@@ -112,7 +122,12 @@ src/
 │   └── ...
 ├── mcp/
 │   ├── mcp-server.ts
+│   ├── shared/
+│   │   └── memory.store.ts
 │   └── index.ts
+├── test/
+│   ├── todo_items.e2e-spec.ts
+│   └── todo_lists.e2e-spec.ts
 ├── utils/
 │   └── utils.ts
 └── ...
